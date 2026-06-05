@@ -129,6 +129,7 @@ body {
 }
 .cell:active:not(.revealed) { border-color: #808080; border-right-color: #fff; border-bottom-color: #fff; }
 .cell.mine-hit { background: #f00 !important; }
+.cell.mine-shown { background: #c0c0c0; }
 .cell.flag-wrong { background: #f88; }
 .cell.pressing {
   animation: press-grow 0.4s linear forwards;
@@ -259,7 +260,7 @@ body {
     applySize();
     for (var r = 0; r < R; r++) {
       board[r] = [];
-      for (var c = 0; c < C; c++) board[r][c] = { mine:false, num:0, rev:false, flg:false };
+      for (var c = 0; c < C; c++) board[r][c] = { mine:false, num:0, rev:false, flg:false, hit:false };
     }
     render();
   }
@@ -337,7 +338,12 @@ body {
     el.className = 'cell';
     if (d.rev) {
       el.classList.add('revealed');
-      if (d.mine) { el.classList.add('mine-hit'); el.textContent = '\uD83D\uDCA3'; }
+      if (d.mine) {
+        // The mine the player actually triggered: bright red.
+        // Other mines revealed at game-over: shown but not highlighted.
+        el.classList.add(d.hit ? 'mine-hit' : 'mine-shown');
+        el.textContent = '\uD83D\uDCA3';
+      }
       else if (d.num > 0) { el.classList.add('n' + d.num); el.textContent = d.num; }
       else { el.textContent = ''; }
     } else if (d.flg) {
@@ -365,28 +371,23 @@ body {
   }
 
   function chkWin() {
-    var a = true, b = true;
+    // Classic Minesweeper win condition: all non-mine cells revealed.
+    // Flag-based win was redundant and could let players "win" without
+    // actually clearing the board.
     for (var r = 0; r < R; r++)
       for (var c = 0; c < C; c++) {
         var cl = board[r][c];
-        if (!cl.mine && !cl.rev) a = false;
-        if (cl.mine && !cl.flg) b = false;
-        if (!cl.mine && cl.flg) b = false;
+        if (!cl.mine && !cl.rev) return false;
       }
-    if (a || (b && flags === M)) {
-      won = true; over = true; stopT();
-      document.getElementById('face').textContent = '\uD83D\uDE0E';
-      for (var r = 0; r < R; r++)
-        for (var c = 0; c < C; c++)
-          if (board[r][c].mine && !board[r][c].flg) board[r][c].rev = true;
-      for (var r = 0; r < R; r++)
-        for (var c = 0; c < C; c++)
-          if (board[r][c].mine && !board[r][c].flg) board[r][c].flg = true;
-      flags = M; updC(); delAll();
-      confetti();
-      return true;
-    }
-    return false;
+    won = true; over = true; stopT();
+    document.getElementById('face').textContent = '\uD83D\uDE0E';
+    // Auto-flag any remaining unflagged mines for visual completeness.
+    for (var r = 0; r < R; r++)
+      for (var c = 0; c < C; c++)
+        if (board[r][c].mine && !board[r][c].flg) board[r][c].flg = true;
+    flags = M; updC(); delAll();
+    confetti();
+    return true;
   }
 
   function leftClick(r, c) {
@@ -395,7 +396,7 @@ body {
     if (cl.flg || cl.rev) return;
     if (first) { first = false; placeMines(r, c); startT(); }
     if (cl.mine) {
-      cl.rev = true; over = true; stopT();
+      cl.rev = true; cl.hit = true; over = true; stopT();
       document.getElementById('face').textContent = '\uD83D\uDE35';
       for (var rr = 0; rr < R; rr++) for (var cc = 0; cc < C; cc++) if (board[rr][cc].mine) board[rr][cc].rev = true;
       delAll(); return;
@@ -408,10 +409,13 @@ body {
     if (over) return;
     var cl = board[r][c];
     if (cl.rev) return;
-    if (first) { first = false; placeMines(-1, -1); startT(); }
+    // Note: do NOT trigger first-click mine placement here. Mines are placed
+    // on the first REVEAL so the safe 3x3 zone is centered on a real click.
+    // Start the timer on first interaction (flag or reveal) for fairness.
+    if (first && !timerId) startT();
     cl.flg = !cl.flg;
     flags += cl.flg ? 1 : -1;
-    updC(); delOne(r, c); chkWin();
+    updC(); delOne(r, c);
   }
 
   function dblClick(r, c) {
@@ -430,7 +434,7 @@ body {
       for (var dc = -1; dc <= 1; dc++) {
         var nr = r + dr, nc = c + dc;
         if (nr >= 0 && nr < R && nc >= 0 && nc < C && !board[nr][nc].rev && !board[nr][nc].flg) {
-          if (board[nr][nc].mine) hit = true;
+          if (board[nr][nc].mine) { hit = true; board[nr][nc].hit = true; }
           if (board[nr][nc].num === 0) revealEmpty(nr, nc); else board[nr][nc].rev = true;
         }
       }
@@ -515,6 +519,8 @@ body {
 
   function confetti() {
     var ct = document.getElementById('confetti');
+    // Clear any leftover pieces from a previous quick win so they don't pile up.
+    ct.innerHTML = '';
     var colors = ['#ff0','#f0f','#0ff','#f00','#0f0','#00f','#ff8800','#ff0088','#88ff00','#00ff88'];
     var shapes = ['\u25a0','\u25cf','\u25b2','\u2605','\u2666'];
     var n = 80;
@@ -536,19 +542,34 @@ body {
     }
   }
 
+  // Debounced resize handler:
+  //   - Always updates difficulty button labels and CSS cell size (cheap).
+  //   - Only resets the in-progress board when the row/column count actually
+  //     changes (e.g. switching orientation on mobile or a major window resize).
+  //     Minor resizes that only change cell pixel size no longer wipe the game.
+  var resizeTimer = null;
   window.addEventListener('resize', function() {
-    updateLabels();
-    var ad = adaptCfg(D[diff]);
-    R = ad.rows; C = ad.cols; M = ad.mines; cellSz = ad.cellSize;
-    applySize();
-    board = []; over = false; won = false; first = true; flags = 0;
-    stopT(); sec = 0; updT(); updC();
-    document.getElementById('face').textContent = '\uD83D\uDE42';
-    for (var r = 0; r < R; r++) {
-      board[r] = [];
-      for (var c = 0; c < C; c++) board[r][c] = { mine:false, num:0, rev:false, flg:false };
-    }
-    render();
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      resizeTimer = null;
+      updateLabels();
+      var ad = adaptCfg(D[diff]);
+      var dimsChanged = (ad.rows !== R || ad.cols !== C);
+      cellSz = ad.cellSize;
+      applySize();
+      if (!dimsChanged) return; // keep current game intact
+
+      // Dimensions changed -> we have to reset (board shape no longer matches).
+      R = ad.rows; C = ad.cols; M = ad.mines;
+      board = []; over = false; won = false; first = true; flags = 0;
+      stopT(); sec = 0; updT(); updC();
+      document.getElementById('face').textContent = '\uD83D\uDE42';
+      for (var r = 0; r < R; r++) {
+        board[r] = [];
+        for (var c = 0; c < C; c++) board[r][c] = { mine:false, num:0, rev:false, flg:false, hit:false };
+      }
+      render();
+    }, 150);
   });
 
   // Init hint text for touch devices
