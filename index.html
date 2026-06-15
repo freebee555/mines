@@ -9,10 +9,34 @@
 :root {
   --cell-size: 30px;
   --cell-font: 15px;
+  /* Light theme palette (Win98 classic). Overridden in dark mode below. */
+  --bg: #e0e0e0;
+  --panel: #d0d0d0;
+  --cell-bg: #c0c0c0;
+  --cell-rev-bg: #b0b0b0;
+  --cell-mine-shown-bg: #c0c0c0;
+  --border-light: #fff;
+  --border-dark: #808080;
+  --lcd-bg: #222;
+  --lcd-fg: #f00;
+  --hint-fg: #555;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1e;
+    --panel: #2a2a2a;
+    --cell-bg: #3a3a3a;
+    --cell-rev-bg: #1f1f1f;
+    --cell-mine-shown-bg: #2a2a2a;
+    --border-light: #555;
+    --border-dark: #111;
+    --hint-fg: #aaa;
+  }
 }
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #e0e0e0;
+  background: var(--bg);
+  color: #ddd;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,10 +45,10 @@ body {
   -webkit-user-select: none;
 }
 .game {
-  background: #d0d0d0;
-  border: 3px solid #fff;
-  border-right-color: #808080;
-  border-bottom-color: #808080;
+  background: var(--panel);
+  border: 3px solid var(--border-light);
+  border-right-color: var(--border-dark);
+  border-bottom-color: var(--border-dark);
   padding: 10px;
   border-radius: 2px;
   max-width: 100vw;
@@ -37,17 +61,17 @@ body {
   gap: 8px;
 }
 .counter, .timer {
-  background: #222;
-  color: #f00;
+  background: var(--lcd-bg);
+  color: var(--lcd-fg);
   font-family: 'Courier New', monospace;
   font-size: clamp(20px, 5vw, 28px);
   font-weight: bold;
   padding: 2px 6px;
   min-width: 54px;
   text-align: center;
-  border: 2px solid #808080;
-  border-right-color: #fff;
-  border-bottom-color: #fff;
+  border: 2px solid var(--border-dark);
+  border-right-color: var(--border-light);
+  border-bottom-color: var(--border-light);
 }
 .emoji-btn {
   width: clamp(36px, 8vw, 42px);
@@ -56,12 +80,12 @@ body {
   line-height: clamp(36px, 8vw, 42px);
   text-align: center;
   cursor: pointer;
-  border: 2px solid #fff;
-  border-right-color: #808080;
-  border-bottom-color: #808080;
-  background: #c0c0c0;
+  border: 2px solid var(--border-light);
+  border-right-color: var(--border-dark);
+  border-bottom-color: var(--border-dark);
+  background: var(--cell-bg);
 }
-.emoji-btn:active { border-color: #808080; border-right-color: #fff; border-bottom-color: #fff; }
+.emoji-btn:active { border-color: var(--border-dark); border-right-color: var(--border-light); border-bottom-color: var(--border-light); }
 .mode-toggle {
   width: clamp(36px, 8vw, 42px);
   height: clamp(36px, 8vw, 42px);
@@ -69,14 +93,24 @@ body {
   line-height: clamp(36px, 8vw, 42px);
   text-align: center;
   cursor: pointer;
-  border: 2px solid #fff;
-  border-right-color: #808080;
-  border-bottom-color: #808080;
-  background: #c0c0c0;
+  border: 2px solid var(--border-light);
+  border-right-color: var(--border-dark);
+  border-bottom-color: var(--border-dark);
+  background: var(--cell-bg);
 }
 .mode-toggle.dig { background: #c8d8e8; }
 .mode-toggle.flag { background: #f0d0d0; }
-.mode-toggle:active { border-color: #808080; border-right-color: #fff; border-bottom-color: #fff; }
+.mode-toggle:active { border-color: var(--border-dark); border-right-color: var(--border-light); border-bottom-color: var(--border-light); }
+.sfx-toggle {
+  width: clamp(28px, 6vw, 34px); height: clamp(28px, 6vw, 34px);
+  font-size: clamp(14px, 3vw, 18px); line-height: clamp(28px, 6vw, 34px);
+  text-align: center; cursor: pointer;
+  border: 2px solid var(--border-light);
+  border-right-color: var(--border-dark);
+  border-bottom-color: var(--border-dark);
+  background: var(--cell-bg);
+}
+.sfx-toggle:active { border-color: var(--border-dark); border-right-color: var(--border-light); border-bottom-color: var(--border-light); }
 .difficulty-bar {
   display: flex;
   justify-content: center;
@@ -87,28 +121,35 @@ body {
   padding: 4px 10px;
   cursor: pointer;
   font-size: clamp(11px, 2.5vw, 14px);
-  border: 2px solid #fff;
-  border-right-color: #808080;
-  border-bottom-color: #808080;
-  background: #c0c0c0;
+  border: 2px solid var(--border-light);
+  border-right-color: var(--border-dark);
+  border-bottom-color: var(--border-dark);
+  background: var(--cell-bg);
   white-space: nowrap;
 }
-.diff-btn:active { border-color: #808080; border-right-color: #fff; border-bottom-color: #fff; }
+.diff-btn:active { border-color: var(--border-dark); border-right-color: var(--border-light); border-bottom-color: var(--border-light); }
 .diff-btn.active {
-  border-color: #808080;
-  border-right-color: #fff;
-  border-bottom-color: #fff;
-  background: #b0b0b0;
+  border-color: var(--border-dark);
+  border-right-color: var(--border-light);
+  border-bottom-color: var(--border-light);
+  background: var(--cell-rev-bg);
 }
 .board-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border: 3px solid #808080;
-  border-right-color: #fff;
-  border-bottom-color: #fff;
+  border: 3px solid var(--border-dark);
+  border-right-color: var(--border-light);
+  border-bottom-color: var(--border-light);
 }
 .board { display: grid; }
 .cell {
+  /* Reset native <button> defaults so the classic raised look is preserved. */
+  padding: 0;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: inherit;
+  color: inherit;
   width: var(--cell-size);
   height: var(--cell-size);
   font-size: var(--cell-font);
@@ -116,20 +157,22 @@ body {
   line-height: var(--cell-size);
   text-align: center;
   cursor: pointer;
-  border: 2px solid #fff;
-  border-right-color: #808080;
-  border-bottom-color: #808080;
-  background: #c0c0c0;
+  border: 2px solid var(--border-light);
+  border-right-color: var(--border-dark);
+  border-bottom-color: var(--border-dark);
+  background: var(--cell-bg);
   touch-action: manipulation;
   position: relative;
 }
+.cell:focus { outline: none; box-shadow: inset 0 0 0 2px #4a90d9; }
+.cell:focus:not(:focus-visible) { box-shadow: none; }
 .cell.revealed {
-  border: 1px solid #808080;
-  background: #b0b0b0;
+  border: 1px solid var(--border-dark);
+  background: var(--cell-rev-bg);
 }
-.cell:active:not(.revealed) { border-color: #808080; border-right-color: #fff; border-bottom-color: #fff; }
+.cell:active:not(.revealed) { border-color: var(--border-dark); border-right-color: var(--border-light); border-bottom-color: var(--border-light); }
 .cell.mine-hit { background: #f00 !important; }
-.cell.mine-shown { background: #c0c0c0; }
+.cell.mine-shown { background: var(--cell-mine-shown-bg); }
 .cell.flag-wrong { background: #f88; }
 .cell.pressing {
   animation: press-grow 0.4s linear forwards;
@@ -141,14 +184,34 @@ body {
 }
 .n1 { color: #00f; }
 .n2 { color: #008000; }
-.n3 { color: #f00; }
+.n3 { color: var(--lcd-fg); }
 .n4 { color: #000080; }
 .n5 { color: #800000; }
 .n6 { color: #008080; }
 .n7 { color: #000; }
 .n8 { color: #808080; }
-.hint { text-align: center; margin-top: 6px; font-size: clamp(11px, 2.5vw, 13px); color: #555; }
+@media (prefers-color-scheme: dark) {
+  /* Bump n7/n8 to lighter shades so they remain readable on dark cells. */
+  .n7 { color: #ddd; }
+  .n8 { color: #aaa; }
+}
+.hint { text-align: center; margin-top: 6px; font-size: clamp(11px, 2.5vw, 13px); color: var(--hint-fg); }
 .hint .m { display: none; }
+
+#pauseOverlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.55); color: #fff; z-index: 999;
+  flex-direction: column; justify-content: center; align-items: center;
+  font-size: clamp(28px, 6vw, 42px); font-weight: bold; letter-spacing: 2px;
+  pointer-events: none; text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+#pauseOverlay .sub { font-size: clamp(12px, 3vw, 16px); font-weight: normal; margin-top: 8px; opacity: 0.8; }
+
+.flash-best { animation: flash-best 1.2s ease-out; }
+@keyframes flash-best {
+  0%   { color: #0f0; text-shadow: 0 0 10px #0f0; transform: scale(1.1); }
+  100% { color: var(--lcd-fg); text-shadow: none; transform: scale(1); }
+}
 
 #confetti {
   position: fixed; top: 0; left: 0;
@@ -167,11 +230,13 @@ body {
 </head>
 <body>
 <div id="confetti"></div>
+<div id="pauseOverlay"><div>⏸ 已暂停</div><div class="sub">切回此页面自动继续</div></div>
 <div class="game">
   <div class="header">
     <div class="counter" id="counter">000</div>
     <div class="mode-toggle dig" id="modeToggle" onclick="toggleMode()">⛏️</div>
-    <div class="emoji-btn" id="face" onclick="newGame()">🙂</div>
+    <div class="emoji-btn" id="face" onclick="newGame()" onmousedown="facePress()" onmouseup="faceRelease()" onmouseleave="faceRelease()" ontouchstart="facePress()" ontouchend="faceRelease()">🙂</div>
+    <div class="sfx-toggle" id="sfxToggle" onclick="toggleSfx()" title="声音开关">🔊</div>
     <div class="timer" id="timer">000</div>
   </div>
   <div class="difficulty-bar">
@@ -179,9 +244,9 @@ body {
     <button id="btn-medium" class="diff-btn" onclick="setDifficulty('medium')">中等</button>
     <button id="btn-hard" class="diff-btn" onclick="setDifficulty('hard')">困难</button>
   </div>
-  <div class="board-wrap"><div class="board" id="board"></div></div>
+  <div class="board-wrap"><div class="board" id="board" role="grid" aria-label="扫雷棋盘"></div></div>
   <div class="hint" id="hintText">
-    <span class="d">左键翻开 | 右键插旗 | 双击数字快速翻开</span>
+    <span class="d">左键翻开 | 右键插旗 | 双击数字快速翻开 | 方向键移动 F 插旗 Esc 重开</span>
     <span class="m">⛏点击翻开/长按插旗 | 🚩点击插旗/长按翻开 | 点数字快速翻开</span>
   </div>
 </div>
@@ -212,8 +277,138 @@ body {
   function updC() { document.getElementById('counter').textContent = P(M - flags, 3); }
   function updT() { document.getElementById('timer').textContent = P(Math.min(sec, 999), 3); }
 
+  // Face emoji state machine. Centralized so mouse-press can override the
+  // 'base' emoji (idle / win / lose) without fighting inline assignments.
+  // base = '🙂' (idle), '😎' (win), '😱' (lose), '😮' is transient.
+  var faceBase = '\uD83D\uDE42';
+  function setFace(e) { faceBase = e; if (!facePressed) document.getElementById('face').textContent = e; }
+  var facePressed = false;
+  function facePress() { facePressed = true; document.getElementById('face').textContent = '\uD83D\uDE2E'; }
+  function faceRelease() { facePressed = false; document.getElementById('face').textContent = faceBase; }
+
+  // Web Audio sfx. Lazily created on first user gesture (autoplay policy).
+  // All sounds are short, synthesized — no asset files required.
+  var audioCtx = null;
+  var sfxOn = true;
+  function sfx(name) {
+    if (!sfxOn) return;
+    try {
+      if (!audioCtx) {
+        var Ctor = window.AudioContext || window.webkitAudioContext;
+        if (!Ctor) return;
+        audioCtx = new Ctor();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      var t0 = audioCtx.currentTime;
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      if (name === 'reveal') {
+        osc.type = 'sine'; osc.frequency.setValueAtTime(420, t0);
+        gain.gain.setValueAtTime(0.08, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.06);
+        osc.start(t0); osc.stop(t0 + 0.06);
+      } else if (name === 'flag') {
+        osc.type = 'square'; osc.frequency.setValueAtTime(560, t0);
+        gain.gain.setValueAtTime(0.05, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.05);
+        osc.start(t0); osc.stop(t0 + 0.05);
+      } else if (name === 'explode') {
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, t0);
+        osc.frequency.exponentialRampToValueAtTime(40, t0 + 0.4);
+        gain.gain.setValueAtTime(0.18, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.4);
+        osc.start(t0); osc.stop(t0 + 0.4);
+      } else if (name === 'win') {
+        // Rising arpeggio: C5 E5 G5 C6
+        var notes = [523, 659, 784, 1047];
+        notes.forEach(function(freq, i) {
+          var o = audioCtx.createOscillator();
+          var g = audioCtx.createGain();
+          o.connect(g); g.connect(audioCtx.destination);
+          o.type = 'triangle'; o.frequency.setValueAtTime(freq, t0 + i*0.08);
+          g.gain.setValueAtTime(0, t0 + i*0.08);
+          g.gain.linearRampToValueAtTime(0.08, t0 + i*0.08 + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.001, t0 + i*0.08 + 0.18);
+          o.start(t0 + i*0.08); o.stop(t0 + i*0.08 + 0.2);
+        });
+      }
+    } catch (e) { /* audio failed — silent fallback */ }
+  }
+
+  // Per-difficulty stats persisted in localStorage. Key: mines_stats_v1.
+  // Shape: { easy: { best, total, wins }, medium: {...}, hard: {...} }
+  var STATS_KEY = 'mines_stats_v1';
+  var stats = { easy:{best:null,total:0,wins:0}, medium:{best:null,total:0,wins:0}, hard:{best:null,total:0,wins:0} };
+  function loadStats() {
+    try {
+      var raw = localStorage.getItem(STATS_KEY);
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      ['easy','medium','hard'].forEach(function(k) {
+        if (parsed[k] && typeof parsed[k] === 'object') stats[k] = parsed[k];
+      });
+    } catch (e) { /* localStorage may be disabled — silent fallback */ }
+  }
+  function saveStats() {
+    try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (e) {}
+  }
+  // Record the outcome of a finished game. newBest=true flashes the counter.
+  function recordResult(d, didWin, seconds) {
+    var s = stats[d];
+    s.total += 1;
+    if (didWin) {
+      s.wins += 1;
+      if (s.best === null || seconds < s.best) {
+        s.best = seconds;
+        return true; // new best
+      }
+    }
+    return false;
+  }
+  // Brief green flash on the counter when a new best is set.
+  function flashCounter() {
+    var el = document.getElementById('counter');
+    el.classList.add('flash-best');
+    setTimeout(function() { el.classList.remove('flash-best'); }, 1200);
+  }
+  loadStats();
+  // Restore sfx preference (default: on).
+  try {
+    var sfxPref = localStorage.getItem('mines_sfx');
+    if (sfxPref === '0') { sfxOn = false; document.getElementById('sfxToggle').textContent = '\uD83D\uDD07'; }
+  } catch (e) {}
+  function toggleSfx() {
+    sfxOn = !sfxOn;
+    document.getElementById('sfxToggle').textContent = sfxOn ? '\uD83D\uDD0A' : '\uD83D\uDD07';
+    try { localStorage.setItem('mines_sfx', sfxOn ? '1' : '0'); } catch (e) {}
+    if (sfxOn) sfx('reveal');
+  }
+
   function startT() { sec = 0; updT(); if (timerId) clearInterval(timerId); timerId = setInterval(function() { sec++; updT(); }, 1000); }
   function stopT() { if (timerId) { clearInterval(timerId); timerId = null; } }
+
+  // Auto-pause when the tab is hidden, auto-resume when it returns.
+  // We remember the paused state so the resume handler knows whether to
+  // re-start the interval or no-op (game already over, or never started).
+  var paused = false;
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      if (timerId && !over) {
+        stopT();
+        paused = true;
+        showPauseOverlay(true);
+      }
+    } else if (paused) {
+      paused = false;
+      showPauseOverlay(false);
+      if (!over && !first) startT();
+    }
+  });
+  function showPauseOverlay(on) {
+    var el = document.getElementById('pauseOverlay');
+    if (el) el.style.display = on ? 'flex' : 'none';
+  }
 
   function adaptCfg(cfg) {
     var availW = window.innerWidth - CHROME_W;
@@ -248,6 +443,11 @@ body {
     Object.keys(D).forEach(function(k) {
       var ad = adaptCfg(D[k]);
       btns[k].textContent = D[k].label + ' ' + ad.cols + '\u00D7' + ad.rows;
+      // Hover title shows best time + win rate for that difficulty.
+      var s = stats[k];
+      var bestStr = s.best === null ? '无' : (s.best + 's');
+      var rateStr = s.total === 0 ? '—' : Math.round(100 * s.wins / s.total) + '%';
+      btns[k].title = '最佳: ' + bestStr + '  |  胜率: ' + rateStr + ' (' + s.wins + '/' + s.total + ')';
     });
   }
 
@@ -256,7 +456,7 @@ body {
     R = ad.rows; C = ad.cols; M = ad.mines; cellSz = ad.cellSize;
     board = []; over = false; won = false; first = true; flags = 0;
     stopT(); sec = 0; updT(); updC();
-    document.getElementById('face').textContent = '\uD83D\uDE42';
+    setFace('\uD83D\uDE42');
     applySize();
     for (var r = 0; r < R; r++) {
       board[r] = [];
@@ -301,10 +501,13 @@ body {
     be.innerHTML = '';
     for (let r = 0; r < R; r++) {
       for (let c = 0; c < C; c++) {
-        let el = document.createElement('div');
+        let el = document.createElement('button');
+        el.type = 'button'; // prevent implicit form-submit semantics
         el.className = 'cell';
         el.dataset.r = r;
         el.dataset.c = c;
+        // Default aria-label is filled in by delOne() with full state.
+        el.setAttribute('aria-label', '第 ' + (r+1) + ' 行第 ' + (c+1) + ' 列');
         el.addEventListener('click', function(evt) { cellClick(evt, r, c); });
         el.addEventListener('dblclick', function() { dblClick(r, c); });
         el.addEventListener('contextmenu', function(e) {
@@ -336,20 +539,36 @@ body {
     var el = getCell(r, c); if (!el) return;
     var d = board[r][c];
     el.className = 'cell';
+    // Reset focus-only styles every redraw (focus may persist across paints).
+    var aria = '第 ' + (r+1) + ' 行第 ' + (c+1) + ' 列，';
     if (d.rev) {
       el.classList.add('revealed');
       if (d.mine) {
-        // The mine the player actually triggered: bright red.
-        // Other mines revealed at game-over: shown but not highlighted.
         el.classList.add(d.hit ? 'mine-hit' : 'mine-shown');
         el.textContent = '\uD83D\uDCA3';
+        aria += d.hit ? '踩中的雷' : '揭示的雷';
       }
-      else if (d.num > 0) { el.classList.add('n' + d.num); el.textContent = d.num; }
-      else { el.textContent = ''; }
+      else if (d.num > 0) {
+        el.classList.add('n' + d.num);
+        el.textContent = d.num;
+        aria += '数字 ' + d.num;
+      }
+      else {
+        el.textContent = '';
+        aria += '空白';
+      }
     } else if (d.flg) {
       el.textContent = '\uD83D\uDEA9';
-      if (over && !d.mine) el.classList.add('flag-wrong');
-    } else { el.textContent = ''; }
+      aria += '已插旗';
+      if (over && !d.mine) {
+        el.classList.add('flag-wrong');
+        aria += '（插错）';
+      }
+    } else {
+      el.textContent = '';
+      aria += '未翻开';
+    }
+    el.setAttribute('aria-label', aria);
   }
 
   function delAll() { for (var r = 0; r < R; r++) for (var c = 0; c < C; c++) delOne(r, c); }
@@ -380,7 +599,11 @@ body {
         if (!cl.mine && !cl.rev) return false;
       }
     won = true; over = true; stopT();
-    document.getElementById('face').textContent = '\uD83D\uDE0E';
+    setFace('\uD83D\uDE0E');
+    sfx('win');
+    // Persist result; flash counter if a new best was achieved.
+    if (recordResult(diff, true, sec)) flashCounter();
+    saveStats();
     // Auto-flag any remaining unflagged mines for visual completeness.
     for (var r = 0; r < R; r++)
       for (var c = 0; c < C; c++)
@@ -397,12 +620,16 @@ body {
     if (first) { first = false; placeMines(r, c); startT(); }
     if (cl.mine) {
       cl.rev = true; cl.hit = true; over = true; stopT();
-      document.getElementById('face').textContent = '\uD83D\uDE35';
+      setFace('\uD83D\uDE35');
+      sfx('explode');
+      recordResult(diff, false, sec); saveStats();
       for (var rr = 0; rr < R; rr++) for (var cc = 0; cc < C; cc++) if (board[rr][cc].mine) board[rr][cc].rev = true;
       delAll(); return;
     }
     if (cl.num === 0) revealEmpty(r, c); else cl.rev = true;
-    delAll(); chkWin();
+    delAll();
+    sfx('reveal');
+    chkWin();
   }
 
   function rightClick(r, c) {
@@ -413,8 +640,12 @@ body {
     // on the first REVEAL so the safe 3x3 zone is centered on a real click.
     // Start the timer on first interaction (flag or reveal) for fairness.
     if (first && !timerId) startT();
+    // Enforce flag cap: classic Minesweeper refuses to plant a new flag
+    // once you already have M flags down, even if some are on safe cells.
+    if (!cl.flg && flags >= M) return;
     cl.flg = !cl.flg;
     flags += cl.flg ? 1 : -1;
+    sfx('flag');
     updC(); delOne(r, c);
   }
 
@@ -440,7 +671,9 @@ body {
       }
     if (hit) {
       over = true; stopT();
-      document.getElementById('face').textContent = '\uD83D\uDE35';
+      setFace('\uD83D\uDE35');
+      sfx('explode');
+      recordResult(diff, false, sec); saveStats();
       for (var rr = 0; rr < R; rr++) for (var cc = 0; cc < C; cc++) if (board[rr][cc].mine) board[rr][cc].rev = true;
     }
     delAll(); if (!hit) chkWin();
@@ -552,7 +785,37 @@ body {
     if (resizeTimer) clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function() {
       resizeTimer = null;
-      updateLabels();
+  updateLabels();
+
+  // Keyboard navigation. Active element is the focused cell button.
+  // Arrow keys move focus (with wraparound), Space/Enter reveal,
+  // F toggles flag, Escape triggers new game.
+  document.addEventListener('keydown', function(e) {
+    var el = document.activeElement;
+    if (!el || !el.classList || !el.classList.contains('cell')) return;
+    var r = parseInt(el.dataset.r, 10);
+    var c = parseInt(el.dataset.c, 10);
+    if (isNaN(r) || isNaN(c)) return;
+    var nr = r, nc = c;
+    if (e.key === 'ArrowUp') nr = (r - 1 + R) % R;
+    else if (e.key === 'ArrowDown') nr = (r + 1) % R;
+    else if (e.key === 'ArrowLeft') nc = (c - 1 + C) % C;
+    else if (e.key === 'ArrowRight') nc = (c + 1) % C;
+    else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      // Treat Enter on a revealed number as chord (matches dblClick).
+      var cl = board[r][c];
+      if (e.key === 'Enter' && cl.rev && cl.num > 0) dblClick(r, c);
+      else if (e.key === ' ') leftClick(r, c);
+      else leftClick(r, c);
+      return;
+    }
+    else if (e.key === 'f' || e.key === 'F') { rightClick(r, c); return; }
+    else if (e.key === 'Escape') { newGame(); return; }
+    else return;
+    e.preventDefault();
+    var next = getCell(nr, nc); if (next) next.focus();
+  });
       var ad = adaptCfg(D[diff]);
       var dimsChanged = (ad.rows !== R || ad.cols !== C);
       cellSz = ad.cellSize;
@@ -563,7 +826,7 @@ body {
       R = ad.rows; C = ad.cols; M = ad.mines;
       board = []; over = false; won = false; first = true; flags = 0;
       stopT(); sec = 0; updT(); updC();
-      document.getElementById('face').textContent = '\uD83D\uDE42';
+      setFace('\uD83D\uDE42');
       for (var r = 0; r < R; r++) {
         board[r] = [];
         for (var c = 0; c < C; c++) board[r][c] = { mine:false, num:0, rev:false, flg:false, hit:false };
@@ -583,6 +846,9 @@ body {
   window.newGame = newGame;
   window.setDifficulty = setDifficulty;
   window.toggleMode = toggleMode;
+  window.toggleSfx = toggleSfx;
+  window.facePress = facePress;
+  window.faceRelease = faceRelease;
 
   newGame();
 })();
